@@ -9,23 +9,33 @@ export const CatImg = styled.img`
 `
 
 const HeartBase = css`
-    width: 40px;
-    height: 36px;
-    position: absolute;
-    right: 28px;
-    bottom: 28px;
     opacity: 0;
     transition: all 0.3s ease; 
-`
+    position: absolute;
+    top:0;
+    left:0;
+`;
 
 export const Heart = styled(Icon)`
      ${HeartBase};
 `;
 export const HeartFilled = styled(IconFilled)`
      ${HeartBase};
-     
-     &:hover {
+
+     &&&:hover {
         opacity: 1;
+    }
+`;
+
+export const IconContainer = styled.div<{isFavourite?: boolean}>`
+    width: 40px;
+    height: 36px;
+    position: absolute;
+    right: 28px;
+    bottom: 28px;
+
+    & ${HeartFilled} {
+        opacity: ${({isFavourite})=> isFavourite ? '1' : '0'};
     }
 `;
 
@@ -44,7 +54,7 @@ export const CatItem = styled.div`
         box-shadow: 0px 6px 5px rgba(0, 0, 0, 0.24), 0px 9px 18px rgba(0, 0, 0, 0.18); 
 
 
-        & > ${Heart} {
+        & ${Heart} {
             opacity: 1;
         }
     }
