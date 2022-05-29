@@ -1,0 +1,16 @@
+body {
+    min-height: 100vh;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+
+}
+main {
+    height: 100%;
+    width: 100%;
+}
+
+a:link,
+a:visited {
+    color: currentColor;
+}

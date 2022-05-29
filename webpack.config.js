@@ -16,7 +16,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(js|jsx|ts|tsx)$/,
+                test: /\.(js|jsx|ts|tsx|svg)$/,
                 exclude: /(node_modules)/,
                 loader: 'babel-loader',
                 include: paths.src,
@@ -36,7 +36,7 @@ module.exports = {
         }),
     ],
     resolve: {
-        extensions: [ '*', '.tsx', '.ts', '.js', '.jsx', ],
+        extensions: [ '*', '.tsx', '.ts', '.js', '.jsx','svg' ],
         alias: {
             '@': paths.src,
             '@styled': path.join(__dirname, 'src/styled-components'),
