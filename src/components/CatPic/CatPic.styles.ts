@@ -22,10 +22,6 @@ export const Heart = styled(Icon)`
 `;
 export const HeartFilled = styled(IconFilled)`
      ${HeartBase};
-
-     &&&:hover {
-        opacity: 1;
-    }
 `;
 
 export const IconContainer = styled.div<{isFavourite?: boolean}>`
@@ -36,7 +32,10 @@ export const IconContainer = styled.div<{isFavourite?: boolean}>`
     bottom: 28px;
 
     & ${HeartFilled} {
-        opacity: ${({isFavourite})=> isFavourite ? '1' : '0'};
+         opacity: ${({isFavourite})=> isFavourite ? '1' : '0'}; 
+         &:hover {
+              opacity: ${({isFavourite})=> isFavourite ? '0' : '1'}; ;
+         }
     }
 `;
 

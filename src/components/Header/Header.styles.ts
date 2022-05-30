@@ -1,4 +1,5 @@
-import styled, { css} from "styled-components";
+import styled from "styled-components";
+import {NavLink} from 'react-router-dom';
 
 import {COLORS} from "@/constants/colors";
 
@@ -16,9 +17,10 @@ export const Container = styled.div`
     display: flex;
 `;
 
-export const Button = styled.div`
-    padding: 23px 20px;
-    &:hover {
+export const Button = styled(NavLink)`
+    padding: 25px 20px;
+
+    &.active, &:hover {
         background:${COLORS.darkBlue}
     };
 `

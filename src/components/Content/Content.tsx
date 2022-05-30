@@ -5,6 +5,7 @@ import {Cat} from '@/types/Cat';
 import {prettyFetch} from '@/utils/prettyFetch';
 import CatPic from "@/components/CatPic/CatPic";
 import {Container, GridContainer, Loader} from './Content.styles';
+import {Switch, Route, useLocation} from "react-router-dom";
 
 const options = {
     root: null as null,
@@ -15,6 +16,8 @@ const options = {
 function Content() {
     const [cats, setCats] = useState<Cat[]>([]);
     const [favourites, setFavourites] = useState<Cat[]>([]);
+
+    const location = useLocation();
 
     const interceptionTarget = useRef<HTMLDivElement>(null);
     const page = useRef(0);
@@ -48,9 +51,9 @@ function Content() {
         observer.observe(interceptionTarget.current);
 
         return () => {
-            observer.unobserve(interceptionTarget.current);
+            observer.disconnect();
         }
-    },[interceptionTarget.current, getMoreCats])
+    },[interceptionTarget.current, getMoreCats, location])
 
 
     const like = async (cat: Cat) => {
@@ -74,23 +77,41 @@ function Content() {
     }
     
     return (
-        <div>
-            <Container id="container">
-                <GridContainer>
-                    {cats.map((item)=>(
-                        <CatPic 
-                            key={item.id} 
-                            url={item.url} 
-                            id={item.id}
-                            like={like}
-                            disLike={disLike}
-                            fav_id={getFavId(item.id)}
-                        />
-                    ))}
-                </GridContainer>
-                {cats.length >= 15 && (<Loader ref={interceptionTarget}>... загружаем еще котиков ...</Loader>)}
-            </Container>
-        </div>
+        <Switch>
+            <Route path="/favourites">
+                <Container >
+                    <GridContainer>
+                        {favourites.map((item)=>(
+                            <CatPic
+                                key={item.id}
+                                url={item.url}
+                                id={item.id}
+                                like={like}
+                                disLike={disLike}
+                                fav_id={item.fav_id}
+                            />
+                        ))}
+                    </GridContainer>
+                </Container>
+            </Route>
+            <Route exact strict path="/">
+                <Container id="container">
+                    <GridContainer>
+                        {cats.map((item)=>(
+                            <CatPic
+                                key={item.id}
+                                url={item.url}
+                                id={item.id}
+                                like={like}
+                                disLike={disLike}
+                                fav_id={getFavId(item.id)}
+                            />
+                        ))}
+                    </GridContainer>
+                    {cats.length >= 15 && (<Loader ref={interceptionTarget}>... загружаем еще котиков ...</Loader>)}
+                </Container>
+            </Route>
+        </Switch>
     )
 }
 
