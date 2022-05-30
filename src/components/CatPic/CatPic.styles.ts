@@ -1,4 +1,5 @@
 import styled, {css} from "styled-components";
+import {COLORS} from "@/constants/colors";
 import { Icon } from './parts/Icon';
 import { IconFilled } from './parts/IconFilled';
 
@@ -47,7 +48,8 @@ export const CatItem = styled.div`
     cursor: pointer;
     transform: scale(1); 
     box-shadow: 0 0 0 #fff;
-    transition: all 0.3s ease;   
+    transition: all 0.3s ease;  
+     background-color: ${COLORS.grey};
 
     &:hover {
         transform: scale(1.135);   

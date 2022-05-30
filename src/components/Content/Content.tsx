@@ -1,48 +1,56 @@
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useState, useCallback, useRef} from "react";
+import {throttle} from 'lodash';
 
-import CatPic from "@/components/CatPic/CatPic";
 import {Cat} from '@/types/Cat';
-import {Conteiner, GridConteiner} from './Content.styles';
+import {prettyFetch} from '@/utils/prettyFetch';
+import CatPic from "@/components/CatPic/CatPic";
+import {Container, GridContainer, Loader} from './Content.styles';
 
-const authKey = 'fd7a1bf7-aefb-4d08-967b-748a160d2179';
-
+const options = {
+    root: null as null,
+    rootMargin: '0px',
+    threshold: 1.0
+}
 
 function Content() {
     const [cats, setCats] = useState<Cat[]>([]);
     const [favourites, setFavourites] = useState<Cat[]>([]);
 
-    const prettyFetch = useCallback(async (url: string, method: string, body?: any)=>{
-        const myHeaders = new Headers();
-        myHeaders.append('x-api-key', authKey);
-        myHeaders.append('Content-Type', 'application/json');
-        
-
-        const response = await fetch(url, {
-            method,
-            mode: 'cors',
-            headers: myHeaders,
-            body: JSON.stringify(body),
-        })
-
-        return await response.json();
-    },[])
+    const interceptionTarget = useRef<HTMLDivElement>(null);
+    const page = useRef(0);
 
     useEffect (() => {
         (async() => {
             const [catsResponse, favouritesResponse] = await Promise.all([
-                prettyFetch(`https://api.thecatapi.com/v1/images/search?limit=${15}`, 'GET') ,
+                prettyFetch(`https://api.thecatapi.com/v1/images/search?limit=${15}&page=0`, 'GET') ,
                 prettyFetch('https://api.thecatapi.com/v1/favourites', 'GET') 
             ]);
-
-
             setCats(catsResponse);
             setFavourites(favouritesResponse.map((item: any)=>({
-                id: item.image_id,
-                url: item.url,
+                id: item.image.id,
+                url: item.image.url,
                 fav_id: item.id
             })));
         })()
     },[]);
+
+    const getMoreCats = useCallback(async () => {
+        page.current += 2;
+        const catsResponse = await prettyFetch(`https://api.thecatapi.com/v1/images/search?limit=${5}&page=${page.current}`, 'GET');
+
+        setCats((state)=> [...state, ...catsResponse]);
+    },[setCats]);
+
+    useEffect(()=>{
+        if (interceptionTarget.current === null) return;
+
+        const observer = new IntersectionObserver(throttle(getMoreCats,1000), options);
+        observer.observe(interceptionTarget.current);
+
+        return () => {
+            observer.unobserve(interceptionTarget.current);
+        }
+    },[interceptionTarget.current, getMoreCats])
 
 
     const like = async (cat: Cat) => {
@@ -67,8 +75,8 @@ function Content() {
     
     return (
         <div>
-            <Conteiner>
-                <GridConteiner>
+            <Container id="container">
+                <GridContainer>
                     {cats.map((item)=>(
                         <CatPic 
                             key={item.id} 
@@ -79,8 +87,9 @@ function Content() {
                             fav_id={getFavId(item.id)}
                         />
                     ))}
-                </GridConteiner>
-            </Conteiner>
+                </GridContainer>
+                {cats.length >= 15 && (<Loader ref={interceptionTarget}>... загружаем еще котиков ...</Loader>)}
+            </Container>
         </div>
     )
 }
